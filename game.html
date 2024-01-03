@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="./game.css">
+   
+    <script src="./GameObject.js"></script>
+    <script src="./Hero.js"></script>
+    <script src="./Enemy.js"></script>
+    <script>
+        let wrapper;
+        let bgX=0;
+        
+
+        
+        function bgEffect(){
+            // bgX--;
+            // wrapper.style.backgroundPosition= bgX+"px 0px";
+        }
+        function init(){
+            //container, src, x, y, width,height, velX, velY
+            wrapper=document.getElementById("wrapper");
+            new Hero(wrapper, "../images/Ninja/idle__1.png",50,400,40,50,0,0);
+        }
+        function gameLoop(){
+            
+        }
+
+        addEventListener("load", function(){
+            init();
+
+            //키보드 이벤트
+            document.body.addEventListener("keydown", function(e){
+                switch(e.keyCode){
+                    case 37: hero.velX=-4;break;
+                    case 39: hero.velX=4;break;
+                    case 38: hero.velY=-4;break;
+                    case 40: hero.velY=4;break;
+                    case 27: flag=!flag;break; //pause, restart 변환
+                }
+                
+            });
+            document.body.addEventListener("keyup", function(e){
+                switch(e.keyCode){
+                    case 37: hero.velX=0;break;
+                    case 39: hero.velX=0;break;
+                    case 38: hero.velY=0;break;
+                    case 40: hero.velY=0;break;
+                }
+            });
+            setInterval("gameLoop()", 10);
+        })
+    </script>
+</head>
+<body>
+    <div id="wrapper">
+        <button id="btn">Start</button>
+        
+
+    </div>
+</body>
+</html>

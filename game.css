@@ -1,0 +1,27 @@
+#wrapper {
+    width: 800px;
+    height: 500px;
+    background-color: red;
+    margin: auto;
+    background-image: url("../images/Airplane/game_bg.jpg");
+    position: relative;
+
+}
+#btn {
+    font-size: 50px;
+    font-weight: bold;
+    position: absolute;
+    top: 100px;
+    left: 50%;
+    transform: translate(-50%);
+    background-color: gold;
+    color: whitesmoke;
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0px 0px 7px 1px rgb(0,0,0);
+
+}
+#btn:hover {
+    color: green;
+    transition: .3s;
+}
