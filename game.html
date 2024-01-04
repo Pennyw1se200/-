@@ -16,9 +16,10 @@
         let velX = 0; // x축속도
         let velY = 0; // y축속도
         let n=1;
-        let g=0.05;
+        let g=0.11;
         let enemyArray=[];
         let enemyInterval =0;// 적군이 몇번째 마다 나올지 결정짓는 변수
+        let keyDownFlag = {}; //키가 현재 눌려있는지 여부를 나타내는 플래그
 
         let gameFlag=false;  //게임 진행여브를 결정짓는 변수
 
@@ -57,7 +58,11 @@
             
         }
         function jump(){
-            hero.velY=-4;
+            hero.velY= -6;
+            //velY값이 100이상이면 false
+            // if(){
+
+            // }
         }
         function gameLoop() {
             if(gameFlag){
@@ -65,12 +70,19 @@
                 console.log(enemyInterval);
                 bgEffect();
                 hero.move();
+                
 
-                if(enemyInterval % 300==0){
+                if(enemyInterval % 150==0){
                     createEnemy();
                 }
                 for(let i=0;i<enemyArray.length;i++){
                     enemyArray[i].move();
+
+                    //적이 화면을 벗어나면 제거
+                    if(enemyArray[i].x + enemyArray[i].width < 0){
+                        enemyArray.splice(i, 1);
+                        
+                    }
                 }
             }
         }
@@ -80,16 +92,22 @@
             init();
             setInterval(gameLoop, 10);
 
-            document.body.addEventListener("keydown", function(){
+            document.body.addEventListener("keydown", function(event){
                  //눌러진 key 의 코드값
-                switch(event.keyCode){
-                    case 37: hero.velX = -5 ;break; //left
-                    case 38: jump() ;break; //up
-                    case 39: hero.velX = 5 ;break; //right
-                    // case 40: hero.velY = 5 ;break; //down
+                if(!keyDownFlag[event.keyCode]){
+                    keyDownFlag[event.keyCode] = true;
+                    //눌러진  key 의 코드값
+                    switch(event.keyCode){
+                        case 37: hero.velX = -5 ;break; //left
+                        case 38: jump() ;break; //up
+                        case 39: hero.velX = 5 ;break; //right
+                        // case 40: hero.velY = 5 ;break; //down
+                    }
                 }
             });
-            document.body.addEventListener("keyup", function(){
+            document.body.addEventListener("keyup", function(event){
+                keyDownFlag[event.keyCode] = false;
+
                 switch(event.keyCode){
                     case 37: hero.velX = 0;break; //left
 
