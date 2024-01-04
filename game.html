@@ -11,54 +11,100 @@
     <script src="./Enemy.js"></script>
     <script>
         let wrapper;
-        let bgX=0;
-        
+        let bgX = 0;
+        let hero;
+        let velX = 0; // x축속도
+        let velY = 0; // y축속도
+        let n=1;
+        let g=0.05;
+        let enemyArray=[];
+        let enemyInterval =0;// 적군이 몇번째 마다 나올지 결정짓는 변수
 
+        let gameFlag=false;  //게임 진행여브를 결정짓는 변수
+
+        function bgEffect() {
+            bgX--;
+            wrapper.style.backgroundPosition = bgX + "px 0px";
+        }
+
+        function move() {
+            hero.x += hero.velX
+            hero.y += hero.velY
+
+            hero.style.left = hero.x + "px";
+            hero.style.top =  hero.y + "px";
+        }
         
-        function bgEffect(){
-            // bgX--;
-            // wrapper.style.backgroundPosition= bgX+"px 0px";
+        function changeImage(){
+            if(n <10){
+                n++;
+            }else {
+                n =1;
+            }
+            hero.changeImage("../images/Ninja/Run__"+n+".png");
         }
-        function init(){
+        function createEnemy(){
+            let enemy = new Enemy(wrapper,"../images/any/enemy1.png",950,460,50,50,-4,0);
+            enemyArray.push(enemy);
+        }
+        function init() {
+            wrapper = document.getElementById("wrapper");
             //container, src, x, y, width,height, velX, velY
-            wrapper=document.getElementById("wrapper");
-            new Hero(wrapper, "../images/Ninja/idle__1.png",50,400,40,50,0,0);
-        }
-        function gameLoop(){
+           hero = new Hero(wrapper, "../images/Ninja/Run__1.png", 100, 460, 70, 80, 0, 0);
+           
+           setInterval(changeImage, 100);
+
             
         }
+        function jump(){
+            hero.velY=-4;
+        }
+        function gameLoop() {
+            if(gameFlag){
+                enemyInterval++;
+                console.log(enemyInterval);
+                bgEffect();
+                hero.move();
 
-        addEventListener("load", function(){
+                if(enemyInterval % 300==0){
+                    createEnemy();
+                }
+                for(let i=0;i<enemyArray.length;i++){
+                    enemyArray[i].move();
+                }
+            }
+        }
+      
+
+        addEventListener("load", function () {
             init();
+            setInterval(gameLoop, 10);
 
-            //키보드 이벤트
-            document.body.addEventListener("keydown", function(e){
-                switch(e.keyCode){
-                    case 37: hero.velX=-4;break;
-                    case 39: hero.velX=4;break;
-                    case 38: hero.velY=-4;break;
-                    case 40: hero.velY=4;break;
-                    case 27: flag=!flag;break; //pause, restart 변환
-                }
-                
-            });
-            document.body.addEventListener("keyup", function(e){
-                switch(e.keyCode){
-                    case 37: hero.velX=0;break;
-                    case 39: hero.velX=0;break;
-                    case 38: hero.velY=0;break;
-                    case 40: hero.velY=0;break;
+            document.body.addEventListener("keydown", function(){
+                 //눌러진 key 의 코드값
+                switch(event.keyCode){
+                    case 37: hero.velX = -5 ;break; //left
+                    case 38: jump() ;break; //up
+                    case 39: hero.velX = 5 ;break; //right
+                    // case 40: hero.velY = 5 ;break; //down
                 }
             });
-            setInterval("gameLoop()", 10);
-        })
+            document.body.addEventListener("keyup", function(){
+                switch(event.keyCode){
+                    case 37: hero.velX = 0;break; //left
+
+                    case 39: hero.velX = 0;break; //right
+                    // case 40: hero.velY = 0;break; //down
+                }               
+            });
+            
+        });
+    
     </script>
 </head>
 <body>
     <div id="wrapper">
-        <button id="btn">Start</button>
-        
-
+        <button id="btn" name="hidden" onClick="gameFlag=true;this.style.display='none'">Start</button>
     </div>
 </body>
 </html>

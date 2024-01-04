@@ -1,10 +1,12 @@
 #wrapper {
-    width: 800px;
-    height: 500px;
+    width: 1000px;
+    height: 600px;
     background-color: red;
     margin: auto;
-    background-image: url("../images/Airplane/game_bg.jpg");
+    background-image: url("../images/any/gamebg.png");
     position: relative;
+    overflow: hidden;
+    
 
 }
 #btn {
