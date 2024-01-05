@@ -18,11 +18,33 @@
         let n=1;
         let g=0.11;
         let enemyArray=[];
-        let enemyInterval =0;// 적군이 몇번째 마다 나올지 결정짓는 변수
-        let keyDownFlag = {}; //키가 현재 눌려있는지 여부를 나타내는 플래그
-
-        let gameFlag=false;  //게임 진행여브를 결정짓는 변수
-
+        let enemyInterval = 0;// 적군이 몇번째 마다 나올지 결정짓는 변수
+        let score = 0; //스코어 변수
+        let gameFlag=false;  //게임 진행 여부를 결정짓는 변수
+        let keyDownFlag = {
+            38: false, //up arrow key
+            40: false, //down arrow key
+        }; //키가 현재 눌려있는지 여부를 나타내는 플래그
+        
+        function startGame(){
+            gameFlag = true;
+            document.getElementById("btn").style.display = "none";
+        }
+        function endGame(){
+            gameFlag = false;
+            // 게임 종료 메시지를 위한 요소 추가
+            let gameOver = document.createElement("div");
+            gameOver.id = "gameOver";
+            gameOver.style.display = "block";
+            gameOver.innerText = "Game Over!";
+            gameOver.style.fontSize = "30px";
+            gameOver.style.position = "absolute";
+            gameOver.style.top = "20%";
+            gameOver.style.left = "50%";
+            gameOver.style.transform = "translate(-50%, -50%)";
+            document.body.appendChild(gameOver);
+              
+        }
         function bgEffect() {
             bgX--;
             wrapper.style.backgroundPosition = bgX + "px 0px";
@@ -37,82 +59,108 @@
         }
         
         function changeImage(){
-            if(n <10){
-                n++;
-            }else {
-                n =1;
+            if(gameFlag){
+                if(n < 10){
+                    n++;
+                }else {
+                    n =1;
+                }
+                hero.changeImage("../images/Ninja/Run__"+n+".png");
             }
-            hero.changeImage("../images/Ninja/Run__"+n+".png");
         }
         function createEnemy(){
-            let enemy = new Enemy(wrapper,"../images/any/enemy1.png",950,460,50,50,-4,0);
+            let enemy = new Enemy(wrapper,"../images/any/enemy1.png",950,490,50,50,-4,0);
             enemyArray.push(enemy);
+        }
+        function updateScore() {
+            // 스코어 업데이트
+            score = enemyInterval;
+            document.getElementById("score").innerText = "Score: " + score;
+        }
+       
+        function jump(){
+            if (hero.y === 450){ //만약 y가 450이어야지만 아래 velY가 -6일수있게된다.
+                hero.velY= -6; 
+            }
         }
         function init() {
             wrapper = document.getElementById("wrapper");
             //container, src, x, y, width,height, velX, velY
-           hero = new Hero(wrapper, "../images/Ninja/Run__1.png", 100, 460, 70, 80, 0, 0);
-           
-           setInterval(changeImage, 100);
-
+            hero = new Hero(wrapper, "../images/Ninja/idle__1.png", 200, 460, 70, 80, 0, 0);
             
+            // 스코어 표시를 위한 요소 추가
+            let scoreEl = document.createElement("div");
+            scoreEl.id = "score";
+            scoreEl.innerText = "Score: 0";
+            scoreEl.style.marginLeft = "20px";
+            scoreEl.style.fontSize = "20px";
+            wrapper.appendChild(scoreEl);
+            
+            setInterval(changeImage, 50);
         }
-        function jump(){
-            hero.velY= -6;
-            //velY값이 100이상이면 false
-            // if(){
-
-            // }
+        // 충돌체크
+        function collision(hero, enemy){
+            let xDifference = enemy.x - (hero.x + hero.width);
+            let yDifference = enemy.y - (hero.y + hero.height);
+            console.log(xDifference, yDifference);
+            if(xDifference < 0 && yDifference < 0){
+                console.log("충돌감지");
+                endGame();
+                return true;
+            }
+            return false;
         }
         function gameLoop() {
             if(gameFlag){
                 enemyInterval++;
-                console.log(enemyInterval);
+                // console.log(enemyInterval);
                 bgEffect();
                 hero.move();
-                
-
+            
                 if(enemyInterval % 150==0){
                     createEnemy();
                 }
                 for(let i=0;i<enemyArray.length;i++){
+                    if(collision(hero, enemyArray[i])){
+                        return;
+                    }
+
                     enemyArray[i].move();
 
                     //적이 화면을 벗어나면 제거
-                    if(enemyArray[i].x + enemyArray[i].width < 0){
-                        enemyArray.splice(i, 1);
-                        
+                    for (let i = 0; i < enemyArray.length; i++) {
+                        if (enemyArray[i].x + enemyArray[i].width < 0) {
+                            enemyArray.splice(i, 1);
+                            i--; // 배열이 변경되었으므로 인덱스를 감소시킴
+                           
+                        }
                     }
                 }
+                updateScore();
             }
         }
+       
       
 
         addEventListener("load", function () {
             init();
             setInterval(gameLoop, 10);
+            
 
             document.body.addEventListener("keydown", function(event){
                  //눌러진 key 의 코드값
                 if(!keyDownFlag[event.keyCode]){
                     keyDownFlag[event.keyCode] = true;
-                    //눌러진  key 의 코드값
                     switch(event.keyCode){
-                        case 37: hero.velX = -5 ;break; //left
-                        case 38: jump() ;break; //up
-                        case 39: hero.velX = 5 ;break; //right
-                        // case 40: hero.velY = 5 ;break; //down
+                        case 38: jump(); break; //up
+                        case 40: hero.velY = 7 ;break; //down
                     }
                 }
             });
             document.body.addEventListener("keyup", function(event){
                 keyDownFlag[event.keyCode] = false;
-
                 switch(event.keyCode){
-                    case 37: hero.velX = 0;break; //left
-
-                    case 39: hero.velX = 0;break; //right
-                    // case 40: hero.velY = 0;break; //down
+                    case 40: hero.velY = 7;break; //down
                 }               
             });
             
@@ -122,7 +170,7 @@
 </head>
 <body>
     <div id="wrapper">
-        <button id="btn" name="hidden" onClick="gameFlag=true;this.style.display='none'">Start</button>
+        <button id="btn" class="idle" onClick="startGame()">Start</button>
     </div>
 </body>
 </html>
